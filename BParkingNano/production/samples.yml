@@ -1,6 +1,6 @@
 common:
   data:
-    lumimask : https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions18/13TeV/ReReco/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt
+    lumimask : https://lost-contact.mit.edu/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/ReReco/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt
     splitting: 20
     globaltag: 102X_dataRun2_v11
   mc:
@@ -8,7 +8,7 @@ common:
     globaltag: 102X_upgrade2018_realistic_v15
 
 samples:
-  data_Run2018A_part%d:    
+  data_Run2018A_part%d:
     dataset: /ParkingBPH%d/Run2018A-05May2019-v1/MINIAOD
     isMC: False
     parts: 

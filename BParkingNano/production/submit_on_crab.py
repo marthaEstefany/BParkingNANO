@@ -15,7 +15,7 @@ config.General.workArea = 'BParkingNANO_%s' % production_tag
 
 config.section_('Data')
 config.Data.publication = False
-config.Data.outLFNDirBase = '/store/group/phys_bphys/bpark/nanoaod_RK2021/%s' % (config.General.workArea)
+config.Data.outLFNDirBase = '/store/user/manunezo/%s' % (config.General.workArea)
 config.Data.inputDBS = 'global'
 
 config.section_('JobType')
@@ -27,7 +27,7 @@ config.JobType.inputFiles = ["../test/lowPtEleReg_2018_02062020_nv.db"]
 
 config.section_('User')
 config.section_('Site')
-config.Site.storageSite = 'T2_CH_CERN'
+config.Site.storageSite = 'T3_US_FNALLPC'
 
 if __name__ == '__main__':
 

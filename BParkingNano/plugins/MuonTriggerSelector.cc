@@ -117,16 +117,19 @@ void MuonTriggerSelector::produce(edm::Event& iEvent, const edm::EventSetup& iSe
 
     std::vector<int> muonIsTrigger(muons->size(), 0);
     std::vector<float> muonDR(muons->size(),-1.);
+    std::vector<float> muonCOSA(muons->size(),-2.);
     std::vector<float> muonDPT(muons->size(),10000.);
     std::vector<int> loose_id(muons->size(),0);
 
     std::vector<int> matched_reco_flag(muons->size(),-1);
     std::vector<int> matched_trg_index(muons->size(),-1);
     std::vector<float> matched_dr(muons->size(),-1.);
+    std::vector<float> matched_cosA(muons->size(),-2.);
     std::vector<float> matched_dpt(muons->size(),-10000.);
     std::vector<std::vector<int>> fires;
     std::vector<std::vector<float>> matcher; 
     std::vector<std::vector<float>> DR;
+    std::vector<std::vector<float>> COSA;
     std::vector<std::vector<float>> DPT;    
     for(const pat::Muon &muon : *muons){
         if(debug)std::cout <<"Muon Pt="<< muon.pt() << " Eta=" << muon.eta() << " Phi=" << muon.phi()  <<endl;
@@ -135,6 +138,7 @@ void MuonTriggerSelector::produce(edm::Event& iEvent, const edm::EventSetup& iSe
 //        std::vector<int> sds(L1Seeds_.size(),0);// L1 Seeds for each L1 muon
         std::vector<float> temp_matched_to(HLTPaths_.size(),1000.);
         std::vector<float> temp_DR(HLTPaths_.size(),1000.);
+        std::vector<float> temp_COSA(HLTPaths_.size(),1000.);
         std::vector<float> temp_DPT(HLTPaths_.size(),1000.);
         int ipath=-1;
 /*        int iseed=-1;
@@ -155,6 +159,7 @@ void MuonTriggerSelector::produce(edm::Event& iEvent, const edm::EventSetup& iSe
             ipath++;
             // the following vectors are used in order to find the minimum DR between a reco muon and all the HLT objects that is matched with it so as a reco muon will be matched with only one HLT object every time so as there is a one-to-one correspondance between the two collection. DPt_rel is not used to create this one-to-one correspondance but only to create a few plots, debugging and be sure thateverything is working fine. 
             std::vector<float> temp_dr(muon.triggerObjectMatches().size(),1000.);
+            std::vector<float> temp_cosA(muon.triggerObjectMatches().size(),1000.);
             std::vector<float> temp_dpt(muon.triggerObjectMatches().size(),1000.);
             std::vector<float> temp_pt(muon.triggerObjectMatches().size(),1000.);
             char cstr[ (path+"*").size() + 1];
@@ -168,7 +173,9 @@ void MuonTriggerSelector::produce(edm::Event& iEvent, const edm::EventSetup& iSe
                         frs[ipath]=1;
                         float dr=TMath::Sqrt(pow(muon.triggerObjectMatch(i)->eta()-muon.eta(),2.)+pow(muon.triggerObjectMatch(i)->phi()-muon.phi(),2.));
                         float dpt=(muon.triggerObjectMatch(i)->pt()-muon.pt())/muon.triggerObjectMatch(i)->pt();
+                        float cosA=(muon.triggerObjectMatch(i)->px()*muon.px()+muon.triggerObjectMatch(i)->py()*muon.py() + muon.triggerObjectMatch(i)->pz()*muon.pz())/(sqrt(muon.triggerObjectMatch(i)->px()*muon.triggerObjectMatch(i)->px() + muon.triggerObjectMatch(i)->py()*muon.triggerObjectMatch(i)->py() + muon.triggerObjectMatch(i)->pz()*muon.triggerObjectMatch(i)->pz())*sqrt(muon.px()*muon.px() + muon.py()*muon.py() + muon.pz()*muon.pz()));
                         temp_dr[i]=dr;
+                        temp_cosA[i]=cosA;
                         temp_dpt[i]=dpt;
                         temp_pt[i]=muon.triggerObjectMatch(i)->pt();                   
                         if(debug)std::cout <<"Path=" <<cstr << endl;
@@ -180,6 +187,7 @@ void MuonTriggerSelector::produce(edm::Event& iEvent, const edm::EventSetup& iSe
                 // and now we find the real minimum between the reco muon and all its matched HLT objects. 
                 temp_DR[ipath]=*min_element(temp_dr.begin(),temp_dr.end());
                 int position=std::min_element(temp_dr.begin(),temp_dr.end()) - temp_dr.begin();
+                temp_COSA[ipath]=temp_cosA[position];
                 temp_DPT[ipath]=temp_dpt[position];
                 temp_matched_to[ipath]=temp_pt[position];
                 }
@@ -188,6 +196,7 @@ void MuonTriggerSelector::produce(edm::Event& iEvent, const edm::EventSetup& iSe
         fires.push_back(frs);//This is used in order to see if a reco muon fired a Trigger (1) or not (0).
         matcher.push_back(temp_matched_to); //This is used in order to see if a reco muon is matched with a HLT object. PT of the reco muon is saved in this vector. 
         DR.push_back(temp_DR);
+        COSA.push_back(temp_COSA);
         DPT.push_back(temp_DPT);
 
     }
@@ -200,12 +209,14 @@ void MuonTriggerSelector::produce(edm::Event& iEvent, const edm::EventSetup& iSe
                         fires[im][path]=0;
                         matcher[im][path]=1000.;
                         DR[im][path]=1000.;                       
+                        COSA[im][path]=1000.;                       
                         DPT[im][path]=1000.;
                     }
                     else{
                         fires[iMuo][path]=0;
                         matcher[iMuo][path]=1000.;
                         DR[iMuo][path]=1000.;                       
+                        COSA[iMuo][path]=1000.;                       
                         DPT[iMuo][path]=1000.;
                     }
                 }              
@@ -213,6 +224,7 @@ void MuonTriggerSelector::produce(edm::Event& iEvent, const edm::EventSetup& iSe
             if(matcher[iMuo][path]!=1000.){
                 muonIsTrigger[iMuo]=1;
                 muonDR[iMuo]=DR[iMuo][path];
+                muonCOSA[iMuo]=COSA[iMuo][path];
                 muonDPT[iMuo]=DPT[iMuo][path];                
             }
         }
@@ -246,8 +258,10 @@ void MuonTriggerSelector::produce(edm::Event& iEvent, const edm::EventSetup& iSe
         muons_out->emplace_back(muon);
         muons_out->back().addUserInt("isTriggering", muonIsTrigger[iMuo]);
         muons_out->back().addUserFloat("DR",muonDR[iMuo]);
+        muons_out->back().addUserFloat("COSA",muonCOSA[iMuo]);
         muons_out->back().addUserFloat("DPT",muonDPT[iMuo]);
         muons_out->back().addUserInt("looseId",loose_id[iMuo]);
+        //deltaR = Var("userFloat('DR')",float,doc=""),
         for(unsigned int i=0; i<HLTPaths_.size(); i++){muons_out->back().addUserInt(HLTPaths_[i],fires[iMuo][i]);}
         trans_muons_out->emplace_back(muonTT);
 

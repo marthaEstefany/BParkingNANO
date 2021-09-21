@@ -34,7 +34,7 @@ options.register('skip', 0,
     "skip first N events"
 )
 
-options.setDefault('maxEvents', 100)
+options.setDefault('maxEvents', 10000)
 options.setDefault('tag', '10215')
 options.parseArguments()
 
