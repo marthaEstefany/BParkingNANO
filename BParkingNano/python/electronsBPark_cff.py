@@ -207,7 +207,7 @@ electronsForAnalysis = cms.EDProducer(
   vertexCollection = cms.InputTag("offlineSlimmedPrimaryVertices"),
   ## cleaning wrt trigger muon [-1 == no cut]
   drForCleaning_wrtTrgMuon = cms.double(0.03),
-  dzForCleaning_wrtTrgMuon = cms.double(1.),
+  dzForCleaning_wrtTrgMuon = cms.double(-1),
   ## cleaning between pfEle and lowPtGsf
   drForCleaning = cms.double(0.03),
   dzForCleaning = cms.double(0.5), ##keep tighter dZ to check overlap of pfEle with lowPt (?)

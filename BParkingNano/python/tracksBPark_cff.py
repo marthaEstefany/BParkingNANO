@@ -14,11 +14,11 @@ tracksBPark = cms.EDProducer('TrackMerger',
                              gsf2packed=cms.InputTag("lowPtGsfLinks:packedCandidates"),
                              gsf2lost=cms.InputTag("lowPtGsfLinks:lostTracks"),
                              trkEtaCut = cms.double(2.5),
-                             dzTrg_cleaning = cms.double(1.),
-                             drTrg_Cleaning = cms.double(0.03),
-                             dcaSig = cms.double(-100000),
-                             trkNormChiMin = cms.int32(-1),
-                             trkNormChiMax = cms.int32(-1)
+                             dzTrg_cleaning = cms.double(-1),
+                             drTrg_Cleaning = cms.double(0.05),
+                             dcaSig = cms.double(100000),
+                             trkNormChiMin = cms.int32(10000),
+                             trkNormChiMax = cms.int32(10000)
                             )
 
 
