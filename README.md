@@ -71,7 +71,7 @@ fork this repository https://github.com/CMSBParking/BParkingNANO (top right _For
 If you haven't done so yet, clone this repository:
 
 ```shell
-git clone git@github.com:CMSBParking/BParkingNANO.git  ./PhysicsTools
+git clone git@github.com:marthaEstefany/BParkingNANO.git  ./PhysicsTools
 ```
 
 Add your fork of the repository as remote:
