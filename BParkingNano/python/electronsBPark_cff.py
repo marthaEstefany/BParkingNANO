@@ -61,7 +61,8 @@ from RecoEgamma.EgammaTools.regressionModifierNew_cfi import regressionModifier1
 
 regressionForEle = cms.EDProducer(
   'ElectronRegresser',
-  lowptSrc = cms.InputTag('slimmedLowPtElectrons'),
+  lowptSrc = cms.InputTag('slimmedElectrons'),
+  #lowptSrc = cms.InputTag('slimmedLowPtElectrons'),
   pfSrc    = cms.InputTag('slimmedElectrons'),
     lowPtRegressionConfig = cms.PSet(
       modifierName = cms.string('EGRegressionModifierLPV1'),
@@ -216,11 +217,13 @@ electronsForAnalysis = cms.EDProducer(
   pf_ptMin = cms.double(1.),
   ptMin = cms.double(0.5),
   etaMax = cms.double(2.5),
-  bdtMin = cms.double(-2.5), #this cut can be used to deactivate low pT e if set to >12
+  #bdtMin = cms.double(-2.5), #this cut can be used to deactivate low pT e if set to >12
+  bdtMin = cms.double(12.5), #this cut can be used to deactivate low pT e if set to >12
   useRegressionModeForP4 = cms.bool(True),
   useGsfModeForP4 = cms.bool(False),
   sortOutputCollections = cms.bool(True),
-  saveLowPtE = cms.bool(True),
+  saveLowPtE = cms.bool(False),
+  #saveLowPtE = cms.bool(True),
     # conversions
     conversions = cms.InputTag('gsfTracksOpenConversions:gsfTracksOpenConversions'),
     beamSpot = cms.InputTag("offlineBeamSpot"),
@@ -332,7 +335,7 @@ electronBParkMCTable = cms.EDProducer("CandMCMatchTableProducerBPark",
 
 electronsBParkSequence = cms.Sequence(
   regressionForEle
-  +lowPtGsfElectronExtraID
+  #+lowPtGsfElectronExtraID
   +egmGsfElectronIDSequence
   +electronsForAnalysis
 )

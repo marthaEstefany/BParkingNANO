@@ -21,7 +21,7 @@ config.Data.inputDBS = 'global'
 config.section_('JobType')
 config.JobType.pluginName = 'Analysis'
 config.JobType.psetName = '../test/run_nano_cfg.py'
-config.JobType.maxJobRuntimeMin = 3000
+config.JobType.maxJobRuntimeMin = 2750
 config.JobType.allowUndistributedCMSSW = True
 config.JobType.inputFiles = ["../test/lowPtEleReg_2018_02062020_nv.db"]
 
@@ -53,8 +53,6 @@ if __name__ == '__main__':
   with open(args.yaml) as f:
     doc = yaml.load(f) # Parse YAML file
     common = doc['common'] if 'common' in doc else {'data' : {}, 'mc' : {}}
-    
-    # loop over samples
     for sample, info in doc['samples'].iteritems():
       # Given we have repeated datasets check for different parts
       parts = info['parts'] if 'parts' in info else [None]
