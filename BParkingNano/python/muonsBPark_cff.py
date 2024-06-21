@@ -19,6 +19,7 @@ muonTrgSelector = cms.EDProducer("MuonTriggerSelector",
 
                                  ptMin = cms.double(0.5),
                                  absEtaMax = cms.double(2.4),
+                                 muSelection = cms.string('isGlobalMuon && isPFMuon && globalTrack.normalizedChi2 < 10 && globalTrack.hitPattern.numberOfValidMuonHits > 0 && numberOfMatchedStations > 1 && innerTrack.hitPattern.numberOfValidPixelHits > 0 && innerTrack.hitPattern.trackerLayersWithMeasurement > 5'),
                                  # keeps only muons with at soft Quality flag
                                  softMuonsOnly = cms.bool(False),
                                  HLTPaths=cms.vstring(Path)#, ### comma to the softMuonsOnly
@@ -27,10 +28,9 @@ muonTrgSelector = cms.EDProducer("MuonTriggerSelector",
 #cuts minimun number in B both mu and e, min number of trg, dz muon, dz and dr track, 
 countTrgMuons = cms.EDFilter("PATCandViewCountFilter",
     minNumber = cms.uint32(1),
-    maxNumber = cms.uint32(999999),
+    maxNumber = cms.uint32(99999999),
     src = cms.InputTag("muonTrgSelector", "trgMuons")
 )
-
 
 muonBParkTable = cms.EDProducer("SimpleCandidateFlatTableProducer",
     src = cms.InputTag("muonTrgSelector:SelectedMuons"),
@@ -54,8 +54,13 @@ muonBParkTable = cms.EDProducer("SimpleCandidateFlatTableProducer",
         ip3d = Var("abs(dB('PV3D'))",float,doc="3D impact parameter wrt first PV, in cm",precision=10),
         sip3d = Var("abs(dB('PV3D')/edB('PV3D'))",float,doc="3D impact parameter significance wrt first PV",precision=10),
 #        segmentComp   = Var("segmentCompatibility()", float, doc = "muon segment compatibility", precision=14), # keep higher precision since people have cuts with 3 digits on this
-#        nStations = Var("numberOfMatchedStations", int, doc = "number of matched stations with default arbitration (segment & track)"),
-        #nTrackerLayers = Var("innerTrack().hitPattern().trackerLayersWithMeasurement()", int, doc = "number of layers in the tracker"),
+        nStations = Var("numberOfMatchedStations", int, doc = "number of matched stations with default arbitration (segment & track)"),
+       # normChi2 = Var("globalTrack()->normalizedChi2()", float, doc = "Custom Muon Tight ID"),
+        #normChi2 = Var("normChi2()", float, doc = "Custom Muon Tight ID"),
+      #  nValidMuonHits = Var("globalTrack().hitPattern().numberOfValidHits()", float, doc = "Custom Muon Tight ID"),
+      #  nValidPixelHits = Var("innerTrack().hitPattern().numberOfValidPixelHits()", float, doc = "Custom Muon Tight ID"),
+#        nTrackerLayers = Var("innerTrack().hitPattern().trackerLayersWithMeasurement()", int, doc = "number of layers in the tracker"),
+#        nTrackerLayers = Var("innerTrack().hitPattern().trackerLayersWithMeasurement()", int, doc = "number of layers in the tracker"),
 #        pfRelIso03_chg = Var("pfIsolationR03().sumChargedHadronPt/pt",float,doc="PF relative isolation dR=0.3, charged component"),
         pfRelIso03_all = Var("(pfIsolationR03().sumChargedHadronPt + max(pfIsolationR03().sumNeutralHadronEt + pfIsolationR03().sumPhotonEt - pfIsolationR03().sumPUPt/2,0.0))/pt",float,doc="PF relative isolation dR=0.3, total (deltaBeta corrections)"),
         pfRelIso04_all = Var("(pfIsolationR04().sumChargedHadronPt + max(pfIsolationR04().sumNeutralHadronEt + pfIsolationR04().sumPhotonEt - pfIsolationR04().sumPUPt/2,0.0))/pt",float,doc="PF relative isolation dR=0.4, total (deltaBeta corrections)"),

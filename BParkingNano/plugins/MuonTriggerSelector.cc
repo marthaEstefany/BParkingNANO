@@ -31,6 +31,8 @@
 #include <TLorentzVector.h>
 #include "helper.h"
 
+#include "CommonTools/Utils/interface/StringCutObjectSelector.h"
+
 using namespace std;
 
 constexpr bool debug = false; //false;
@@ -61,6 +63,7 @@ private:
 
     const double ptMin_;          // min pT in all muons for B candidates
     const double absEtaMax_;      //max eta ""
+    const StringCutObjectSelector<pat::Muon> muon_selection_; // cut on muon
     const bool softMuonsOnly_;    //cuts muons without soft ID
     std::vector<std::string> HLTPaths_;
 //    std::vector<std::string> L1Seeds_;
@@ -76,7 +79,9 @@ MuonTriggerSelector::MuonTriggerSelector(const edm::ParameterSet &iConfig):
   maxdR_(iConfig.getParameter<double>("maxdR_matching")),
   dzTrg_cleaning_(iConfig.getParameter<double>("dzForCleaning_wrtTrgMuon")),
   ptMin_(iConfig.getParameter<double>("ptMin")),
-  absEtaMax_(iConfig.getParameter<double>("absEtaMax")), 
+  absEtaMax_(iConfig.getParameter<double>("absEtaMax")),
+  muon_selection_(iConfig.getParameter<std::string>("muSelection")),
+
   softMuonsOnly_(iConfig.getParameter<bool>("softMuonsOnly")),   /////////Comma
   HLTPaths_(iConfig.getParameter<std::vector<std::string>>("HLTPaths"))//,   //////////Comma
 //  L1Seeds_(iConfig.getParameter<std::vector<std::string>>("L1seeds"))
@@ -243,6 +248,8 @@ void MuonTriggerSelector::produce(edm::Event& iEvent, const edm::EventSetup& iSe
         unsigned int iMuo(&muon - &(muons->at(0)) );
         if(muon.pt()<ptMin_) continue;
         if(fabs(muon.eta())>absEtaMax_) continue;
+        if(!muon_selection_(muon)) continue;
+        if(!muon_selection_(muon)) std::cout <<"AL: muon is rejected" << endl;
         if(muon.isLooseMuon()){loose_id[iMuo] = 1;}
         bool SkipMuon=true;
         if(dzTrg_cleaning_<0) SkipMuon=false;
